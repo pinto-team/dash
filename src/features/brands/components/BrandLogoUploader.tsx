@@ -8,6 +8,7 @@
  * - No hardcoded colors (token-based utilities only)
  */
 import { Loader2, X } from 'lucide-react'
+import axios, { AxiosError } from 'axios'
 import { toast } from 'sonner'
 
 import * as React from 'react'
@@ -47,13 +48,17 @@ export default function BrandLogoUploader({
     const [localPreview, setLocalPreview] = React.useState<string | null>(null)
     const inputRef = React.useRef<HTMLInputElement>(null)
     const abortRef = React.useRef<AbortController | null>(null)
+    const previewUrlRef = React.useRef<string | null>(null)
 
     React.useEffect(() => {
         return () => {
             abortRef.current?.abort()
-            if (localPreview) URL.revokeObjectURL(localPreview)
+            if (previewUrlRef.current) {
+                URL.revokeObjectURL(previewUrlRef.current)
+                previewUrlRef.current = null
+            }
         }
-    }, [localPreview])
+    }, [])
 
     const validateFile = React.useCallback(
         (file: File): boolean => {
@@ -80,6 +85,7 @@ export default function BrandLogoUploader({
             if (localPreview) URL.revokeObjectURL(localPreview)
             const objectUrl = URL.createObjectURL(file)
             setLocalPreview(objectUrl)
+            previewUrlRef.current = objectUrl
 
             abortRef.current?.abort()
             abortRef.current = new AbortController()
@@ -90,9 +96,14 @@ export default function BrandLogoUploader({
                 onChange({ id, url })
                 toast.success(t('uploader.success') || 'Upload completed')
                 URL.revokeObjectURL(objectUrl)
+                previewUrlRef.current = null
                 setLocalPreview(null)
             } catch (err: unknown) {
-                if (err instanceof DOMException && err.name === 'AbortError') return
+                if (
+                    (err instanceof DOMException && err.name === 'AbortError') ||
+                    (axios.isCancel(err) || (err as AxiosError | undefined)?.code === 'ERR_CANCELED')
+                )
+                    return
                 const msg =
                     err instanceof Error ? err.message : (t('uploader.errors.generic') as string)
                 toast.error(msg)
@@ -138,6 +149,7 @@ export default function BrandLogoUploader({
             onChange(null)
             if (localPreview) {
                 URL.revokeObjectURL(localPreview)
+                previewUrlRef.current = null
                 setLocalPreview(null)
             }
         },
