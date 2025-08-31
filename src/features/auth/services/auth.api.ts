@@ -4,12 +4,12 @@ import { API_ROUTES } from '@/shared/constants/apiRoutes'
 import { handleAsyncError } from '@/shared/lib/errors'
 import { defaultLogger } from '@/shared/lib/logger'
 
+function getLogger(action: string, context: Record<string, unknown> = {}) {
+    return defaultLogger.withContext({ component: 'auth.api', action, ...context })
+}
+
 export async function apiLogin(username: string, password: string) {
-    const logger = defaultLogger.withContext({
-        component: 'auth.api',
-        action: 'login',
-        username,
-    })
+    const logger = getLogger('login', { username })
 
     logger.info('Attempting login')
 
@@ -23,10 +23,7 @@ export async function apiLogin(username: string, password: string) {
 }
 
 export async function apiMe(token: string) {
-    const logger = defaultLogger.withContext({
-        component: 'auth.api',
-        action: 'fetchUserInfo',
-    })
+    const logger = getLogger('fetchUserInfo')
 
     logger.info('Fetching user info')
 
@@ -44,10 +41,7 @@ export async function apiMe(token: string) {
 }
 
 export async function apiRefresh(refreshToken: string) {
-    const logger = defaultLogger.withContext({
-        component: 'auth.api',
-        action: 'refreshToken',
-    })
+    const logger = getLogger('refreshToken')
 
     logger.info('Attempting token refresh')
 
@@ -61,10 +55,7 @@ export async function apiRefresh(refreshToken: string) {
 }
 
 export async function apiLogout() {
-    const logger = defaultLogger.withContext({
-        component: 'auth.api',
-        action: 'logout',
-    })
+    const logger = getLogger('logout')
 
     logger.info('Attempting logout')
 
@@ -84,11 +75,7 @@ export async function apiRegister(userData: {
     firstName?: string
     lastName?: string
 }) {
-    const logger = defaultLogger.withContext({
-        component: 'auth.api',
-        action: 'register',
-        email: userData.email,
-    })
+    const logger = getLogger('register', { email: userData.email })
 
     logger.info('Attempting user registration')
 
@@ -102,11 +89,7 @@ export async function apiRegister(userData: {
 }
 
 export async function apiForgotPassword(email: string) {
-    const logger = defaultLogger.withContext({
-        component: 'auth.api',
-        action: 'forgotPassword',
-        email,
-    })
+    const logger = getLogger('forgotPassword', { email })
 
     logger.info('Attempting password reset request')
 
