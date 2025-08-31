@@ -34,7 +34,9 @@ export default function BrandsPage(): JSX.Element {
 
     const debouncedQuery = useDebounced(query, 450)
 
-    const { data, isLoading, error, refetch } = brandsQueries.useList()
+    // Build list params: convert UI page (0-based) to API page (1-based)
+    const listParams = useMemo(() => ({ page: page + 1, limit: pageSize, q: debouncedQuery }), [page, pageSize, debouncedQuery])
+    const { data, isLoading, error, refetch } = brandsQueries.useList(listParams)
 
     const items = data?.data ?? []
     const pagination = data?.meta?.pagination
@@ -64,6 +66,8 @@ export default function BrandsPage(): JSX.Element {
 
     const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setQuery(e.target.value)
+        // Reset to first page when search changes
+        setPage(0)
     }, [])
 
     const handleDelete = useCallback(

@@ -40,10 +40,11 @@ export function toEnglishDigits(input: string | number): string {
     })
 }
 
+export function toPersianDigits(input: string | number): string {
+    return toScriptDigits(input, PERSIAN_DIGITS)
+}
+
 export function convertDigitsByLocale(input: string | number, locale: Locale): string {
-    switch (locale) {
-        case 'fa':
-        default:
-            return toEnglishDigits(input)
-    }
+    if (locale === 'fa') return toPersianDigits(input)
+    return String(input)
 }

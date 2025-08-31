@@ -14,6 +14,7 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { useI18n } from '@/shared/hooks/useI18n'
+import { toAbsoluteUrl } from '@/shared/api/files'
 
 import type { BrandData } from '@/features/brands/model/types'
 
@@ -68,7 +69,7 @@ export default function BrandsTable({ items, onDelete }: Props): JSX.Element {
                                 <TableCell>
                                     {b.logo_url ? (
                                         <img
-                                            src={b.logo_url}
+                                            src={toAbsoluteUrl(b.logo_url)}
                                             alt={t('brands.logo_alt', { name: b.name }) as string}
                                             className="h-10 w-10 rounded object-contain"
                                             loading="lazy"
