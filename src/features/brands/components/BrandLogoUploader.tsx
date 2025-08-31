@@ -19,8 +19,10 @@ import { useI18n } from '@/shared/hooks/useI18n'
 import { uploadSingleImage } from '@/shared/api/files'
 
 type Props = Readonly<{
+    /** Current preview URL */
     value?: string | null
-    onChange: (url?: string | null) => void
+    /** Called with uploaded file info; pass null to clear */
+    onChange: (file: { id?: string | null; url?: string | null } | null) => void
     label?: string
     disabled?: boolean
     maxSizeMB?: number
@@ -84,8 +86,8 @@ export default function BrandLogoUploader({
 
             try {
                 setUploading(true)
-                const url = await uploadSingleImage(file, abortRef.current.signal)
-                onChange(url)
+                const { id, url } = await uploadSingleImage(file, abortRef.current.signal)
+                onChange({ id, url })
                 toast.success(t('uploader.success') || 'Upload completed')
                 URL.revokeObjectURL(objectUrl)
                 setLocalPreview(null)

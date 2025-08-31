@@ -11,7 +11,10 @@ export function toAbsoluteUrl(pathOrUrl: string): string {
     return `${base}${pathOrUrl.startsWith('/') ? pathOrUrl : `/${pathOrUrl}`}`
 }
 
-export async function uploadSingleImage(file: File, signal?: AbortSignal): Promise<string> {
+export async function uploadSingleImage(
+    file: File,
+    signal?: AbortSignal,
+): Promise<{ id: string; url: string }> {
     const form = new FormData()
     // Backend accepts `files` as an array; single file upload still uses the same field
     form.append('files', file)
@@ -28,10 +31,10 @@ export async function uploadSingleImage(file: File, signal?: AbortSignal): Promi
     )
 
     const first = data.files?.[0]
-    if (!first || !first.url) {
+    if (!first || !first.url || !first.id) {
         throw new Error('Upload failed: empty response')
     }
-    return toAbsoluteUrl(first.url)
+    return { id: first.id, url: toAbsoluteUrl(first.url) }
 }
 
 export async function uploadFiles(files: File[], signal?: AbortSignal): Promise<string[]> {
