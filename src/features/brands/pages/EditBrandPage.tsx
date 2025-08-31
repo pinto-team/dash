@@ -1,21 +1,22 @@
 // features/brands/pages/EditBrandPage.tsx
-import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { toast } from 'sonner'
+import {ArrowLeft, ArrowRight} from 'lucide-react'
+import {toast} from 'sonner'
 import * as React from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import {JSX} from 'react'
+import {useNavigate, useParams} from 'react-router-dom'
 
-import { ROUTES } from '@/app/routes/routes'
-import { SiteHeader } from '@/components/layout/site-header'
-import { Button } from '@/components/ui/button'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/features/sidebar/app-sidebar'
-import { useI18n } from '@/shared/hooks/useI18n'
-import { defaultLogger } from '@/shared/lib/logger'
+import {ROUTES} from '@/app/routes/routes'
+import {SiteHeader} from '@/components/layout/site-header'
+import {Button} from '@/components/ui/button'
+import {SidebarInset, SidebarProvider} from '@/components/ui/sidebar'
+import {AppSidebar} from '@/features/sidebar/app-sidebar'
+import {useI18n} from '@/shared/hooks/useI18n'
+import {defaultLogger} from '@/shared/lib/logger'
 
 import BrandForm from '../components/BrandForm'
-import type { BrandData, CreateBrandRequest } from '../model/types'
-import {JSX} from "react";
-import {brandsQueries} from "@/features/brands";
+import type {BrandData, CreateBrandRequest} from '../model/types'
+import {brandsQueries} from '@/features/brands'
+import {toAbsoluteUrl} from "@/shared/api/files.ts";
 
 function brandToFormDefaults(b?: BrandData): Partial<CreateBrandRequest> {
     if (!b) return {}
@@ -24,38 +25,37 @@ function brandToFormDefaults(b?: BrandData): Partial<CreateBrandRequest> {
         description: b.description ?? '',
         country: b.country ?? '',
         website: b.website ?? '',
-        logo_id: b.logo_id ?? '',
+        logo_id: b.logo_id ?? ''
     }
 }
 
 export default function EditBrandPage(): JSX.Element {
-    const { id: rawId } = useParams()
+    const {id: rawId} = useParams()
     const id = (rawId || '').trim()
     const navigate = useNavigate()
 
-    const { data, isLoading, error } = brandsQueries.useDetail(id)
+    const {data, isLoading, error} = brandsQueries.useDetail(id)
     const update = brandsQueries.useUpdate()
     const del = brandsQueries.useDelete()
 
-    const { t, locale } = useI18n()
+    const {t, locale} = useI18n()
     const rtl = (locale?.toLowerCase?.() ?? '').startsWith('fa')
 
     const [apiErrors, setApiErrors] = React.useState<
         ReadonlyArray<{ field: string; message: string }>
     >([])
 
-    // 👀 لاگ وضعیت بارگذاری
     React.useEffect(() => {
         if (isLoading) {
-            defaultLogger.info('Loading brand...', { id })
+            defaultLogger.info('Loading brand...', {id})
             return
         }
         if (error) {
-            defaultLogger.error('Failed to load brand', { id, error: error.message })
+            defaultLogger.error('Failed to load brand', {id, error: error.message})
             return
         }
         if (data?.data) {
-            defaultLogger.info('Brand loaded', { id: data.data.id, name: data.data.name })
+            defaultLogger.info('Brand loaded', {id: data.data.id, name: data.data.name})
             console.log('Brand name:', data.data.name)
         }
     }, [data, isLoading, error, id])
@@ -64,11 +64,12 @@ export default function EditBrandPage(): JSX.Element {
 
     const handleDelete = React.useCallback(() => {
         if (!id) return
-        if (!window.confirm(t('brands.confirm_delete'))) return
+        // کلید نبود: brands.confirm_delete → از یک کلید موجود استفاده می‌کنیم
+        if (!window.confirm(t('brands.actions.delete'))) return
 
         del.mutate(id, {
             onSuccess: () => {
-                toast.success(t('brands.deleted'))
+                toast.success(t('brands.deleted')) // موجود است
                 navigate(ROUTES.BRANDS)
             },
             onError: () => toast.error(t('common.error')),
@@ -84,9 +85,9 @@ export default function EditBrandPage(): JSX.Element {
                 } as React.CSSProperties
             }
         >
-            <AppSidebar variant="inset" />
+            <AppSidebar variant="inset"/>
             <SidebarInset>
-                <SiteHeader />
+                <SiteHeader/>
                 <div className="flex-1 p-6 md:p-8 lg:p-10">
                     {/* Header actions */}
                     <div className="mb-6 flex items-center justify-between">
@@ -99,9 +100,10 @@ export default function EditBrandPage(): JSX.Element {
                                 aria-label={t('common.back')}
                                 title={t('common.back')}
                             >
-                                {rtl ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
+                                {rtl ? <ArrowRight className="h-4 w-4"/> : <ArrowLeft className="h-4 w-4"/>}
                             </Button>
-                            <h1 className="text-2xl font-bold">{t('brands.edit')}</h1>
+                            {/* کلید نبود: brands.edit → از actions.edit استفاده می‌کنیم */}
+                            <h1 className="text-2xl font-bold">{t('actions.edit')}</h1>
                         </div>
                         <div className="flex items-center gap-2">
                             <Button type="submit" form="brand-form" disabled={update.isPending}>
@@ -118,27 +120,31 @@ export default function EditBrandPage(): JSX.Element {
                         <div className="text-sm text-muted-foreground">{t('common.loading')}</div>
                     ) : (
                         <BrandForm
-                            key={data.data.id} // اطمینان از ری‌مونت زمانی که رکورد عوض می‌شود
+                            key={data.data.id}
                             defaultValues={formDefaults}
-                            initialLogoUrl={data.data.logo_url ?? ''}
+                            initialLogoUrl={toAbsoluteUrl(data.data.logo_url ?? '')}
                             onSubmit={(values) => {
                                 setApiErrors([])
-                                update.mutate({ id, payload: values }, {
-                                    onSuccess: () => {
-                                        toast.success(t('brands.saved_success'))
-                                        navigate(ROUTES.BRANDS)
-                                    },
-                                    onError: (err) => {
-                                        const resp = (err as { response?: { data?: unknown } }).response?.data as
-                                            | { code?: number; errors?: Array<{ field: string; message: string }> }
-                                            | undefined
-                                        if (resp?.code === 422 && Array.isArray(resp.errors)) {
-                                            setApiErrors(resp.errors)
-                                        } else {
-                                            toast.error(t('common.error'))
-                                        }
-                                    },
-                                })
+                                update.mutate(
+                                    {id, payload: values},
+                                    {
+                                        onSuccess: () => {
+                                            // کلید نبود: brands.saved_success → common.success
+                                            toast.success(t('common.success'))
+                                            navigate(ROUTES.BRANDS)
+                                        },
+                                        onError: (err) => {
+                                            const resp = (err as { response?: { data?: unknown } }).response?.data as
+                                                | { code?: number; errors?: Array<{ field: string; message: string }> }
+                                                | undefined
+                                            if (resp?.code === 422 && Array.isArray(resp.errors)) {
+                                                setApiErrors(resp.errors)
+                                            } else {
+                                                toast.error(t('common.error'))
+                                            }
+                                        },
+                                    }
+                                )
                             }}
                             submitting={update.isPending}
                             apiErrors={apiErrors}
