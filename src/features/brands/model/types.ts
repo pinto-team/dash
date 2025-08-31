@@ -7,6 +7,7 @@ export interface BrandData {
     country?: string | null
     website?: string | null
     logo_url?: string | null
+    logo_id?: string | null
     created_at: string
     updated_at: string
 }
@@ -16,7 +17,7 @@ export interface CreateBrandRequest {
     description?: string
     country?: string
     website?: string
-    logo_url?: string
+    logo_id?: string
 }
 
 export type UpdateBrandRequest = Partial<CreateBrandRequest>

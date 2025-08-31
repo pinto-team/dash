@@ -24,7 +24,7 @@ function brandToFormDefaults(b?: BrandData): Partial<CreateBrandRequest> {
         description: b.description ?? '',
         country: b.country ?? '',
         website: b.website ?? '',
-        logo_url: b.logo_url ?? '',
+        logo_id: b.logo_id ?? '',
     }
 }
 
@@ -120,6 +120,7 @@ export default function EditBrandPage(): JSX.Element {
                         <BrandForm
                             key={data.data.id} // اطمینان از ری‌مونت زمانی که رکورد عوض می‌شود
                             defaultValues={formDefaults}
+                            initialLogoUrl={data.data.logo_url ?? ''}
                             onSubmit={(values) => {
                                 setApiErrors([])
                                 update.mutate({ id, payload: values }, {

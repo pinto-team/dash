@@ -38,6 +38,8 @@ function isLenientValidUrl(value: string): true | string {
 
 type Props = Readonly<{
     defaultValues?: Partial<CreateBrandRequest>
+    /** Optional initial logo URL for preview (useful on edit) */
+    initialLogoUrl?: string | null
     onSubmit: (data: CreateBrandRequest) => void
     submitting?: boolean
     formId?: string
@@ -46,6 +48,7 @@ type Props = Readonly<{
 
 export default function BrandForm({
     defaultValues,
+    initialLogoUrl,
     onSubmit,
     submitting = false,
     formId = 'brand-form',
@@ -81,7 +84,7 @@ export default function BrandForm({
                     ])
                     .optional()
                     .refine((v) => !v || isLenientValidUrl(v) === true, t('validation.url')),
-                logo_url: z.union([z.string(), z.literal('')]).optional(),
+                logo_id: z.union([z.string(), z.literal('')]).optional(),
             }),
         [t],
     )
@@ -101,7 +104,7 @@ export default function BrandForm({
             description: '',
             country: '',
             website: '',
-            logo_url: '',
+            logo_id: '',
             ...defaultValues,
         },
         mode: 'onBlur',
@@ -114,12 +117,12 @@ export default function BrandForm({
                 description: defaultValues.description ?? '',
                 country: defaultValues.country ?? '',
                 website: defaultValues.website ?? '',
-                logo_url: defaultValues.logo_url ?? '',
+                logo_id: defaultValues.logo_id ?? '',
             })
         }
     }, [defaultValues, reset])
 
-    const logoUrl = watch('logo_url')
+    const [logoPreviewUrl, setLogoPreviewUrl] = React.useState<string>(initialLogoUrl || '')
 
     React.useEffect(() => {
         if (!apiErrors || apiErrors.length === 0) return
@@ -130,7 +133,7 @@ export default function BrandForm({
                 path === 'description' ||
                 path === 'country' ||
                 path === 'website' ||
-                path === 'logo_url'
+                path === 'logo_id'
             ) {
                 setError(path as keyof CreateBrandRequest, { type: 'server', message: err.message })
             }
@@ -148,7 +151,7 @@ export default function BrandForm({
                     description: values.description?.trim() || '',
                     country: values.country?.trim() || '',
                     website: values.website ? normalizeUrl(values.website) : '',
-                    logo_url: values.logo_url?.trim() || '',
+                    logo_id: values.logo_id?.trim() || '',
                 }
                 onSubmit(cleaned)
             })}
@@ -234,10 +237,13 @@ export default function BrandForm({
 
                     <div className="flex flex-col">
                         <BrandLogoUploader
-                            value={logoUrl || ''}
-                            onChange={(url: string | null | undefined) =>
-                                setValue('logo_url', url || '', { shouldDirty: true })
-                            }
+                            value={logoPreviewUrl || ''}
+                            onChange={(file) => {
+                                const id = file?.id || ''
+                                const url = file?.url || ''
+                                setLogoPreviewUrl(url)
+                                setValue('logo_id', id, { shouldDirty: true })
+                            }}
                             label={t('brands.form.logo')}
                             aspect="square"
                             className="h-56 w-full self-start"
