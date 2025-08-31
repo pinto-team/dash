@@ -34,8 +34,8 @@ export default function EditBrandPage(): JSX.Element {
     const navigate = useNavigate()
 
     const { data, isLoading, error } = brandsQueries.useDetail(id)
-    const update = useUpdateBrand(id)
-    const del = brandsQueries.useDelete(id)
+    const update = brandsQueries.useUpdate()
+    const del = brandsQueries.useDelete()
 
     const { t, locale } = useI18n()
     const rtl = (locale?.toLowerCase?.() ?? '').startsWith('fa')
@@ -54,13 +54,13 @@ export default function EditBrandPage(): JSX.Element {
             defaultLogger.error('Failed to load brand', { id, error: error.message })
             return
         }
-        if (data) {
-            defaultLogger.info('Brand loaded', { id: data.id, name: data.name })
-            console.log('Brand name:', data.name)
+        if (data?.data) {
+            defaultLogger.info('Brand loaded', { id: data.data.id, name: data.data.name })
+            console.log('Brand name:', data.data.name)
         }
     }, [data, isLoading, error, id])
 
-    const formDefaults = React.useMemo(() => brandToFormDefaults(data), [data])
+    const formDefaults = React.useMemo(() => brandToFormDefaults(data?.data), [data])
 
     const handleDelete = React.useCallback(() => {
         if (!id) return
@@ -118,11 +118,11 @@ export default function EditBrandPage(): JSX.Element {
                         <div className="text-sm text-muted-foreground">{t('common.loading')}</div>
                     ) : (
                         <BrandForm
-                            key={data.id} // اطمینان از ری‌مونت زمانی که رکورد عوض می‌شود
+                            key={data.data.id} // اطمینان از ری‌مونت زمانی که رکورد عوض می‌شود
                             defaultValues={formDefaults}
                             onSubmit={(values) => {
                                 setApiErrors([])
-                                update.mutate(values, {
+                                update.mutate({ id, payload: values }, {
                                     onSuccess: () => {
                                         toast.success(t('brands.saved_success'))
                                         navigate(ROUTES.BRANDS)
