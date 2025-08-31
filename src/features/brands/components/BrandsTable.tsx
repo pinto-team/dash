@@ -15,10 +15,10 @@ import {
 } from '@/components/ui/table'
 import { useI18n } from '@/shared/hooks/useI18n'
 
-import type { BrandData } from '../services/brands.api'
+import type { BrandData } from '@/features/brands/model/types'
 
 type Props = Readonly<{
-    items: ReadonlyArray<Brand>
+    items: ReadonlyArray<BrandData>
     onDelete?: (id: string) => void
 }>
 

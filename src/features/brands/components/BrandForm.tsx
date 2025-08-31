@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useI18n } from '@/shared/hooks/useI18n'
 import {CreateBrandRequest} from "@/features/brands/model/types.ts";
+import BrandLogoUploader from '@/features/brands/components/BrandLogoUploader'
 
 function normalizeUrl(value: string): string {
     const trimmed = value.trim()
@@ -234,7 +235,7 @@ export default function BrandForm({
                     <div className="flex flex-col">
                         <BrandLogoUploader
                             value={logoUrl || ''}
-                            onChange={(url) =>
+                            onChange={(url: string | null | undefined) =>
                                 setValue('logo_url', url || '', { shouldDirty: true })
                             }
                             label={t('brands.form.logo')}
