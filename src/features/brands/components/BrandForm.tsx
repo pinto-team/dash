@@ -11,9 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useI18n } from '@/shared/hooks/useI18n'
-
-import type { CreateBrandRequest } from '../services/brands.api'
-import BrandLogoUploader from './BrandLogoUploader'
+import {CreateBrandRequest} from "@/features/brands/model/types.ts";
 
 function normalizeUrl(value: string): string {
     const trimmed = value.trim()

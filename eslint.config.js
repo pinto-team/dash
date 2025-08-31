@@ -1,6 +1,5 @@
+// eslint.config.js
 import js from '@eslint/js'
-import prettier from 'eslint-plugin-prettier'
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import { globalIgnores } from 'eslint/config'
@@ -12,23 +11,20 @@ export default tseslint.config([
     {
         files: ['**/*.{ts,tsx}'],
         extends: [
-            js.configs.recommended,
-            tseslint.configs.recommended,
-            reactHooks.configs['recommended-latest'],
-            reactRefresh.configs.vite,
+            js.configs.recommended,            // فقط قواعد پایه جاوااسکریپت
+            tseslint.configs.recommended,      // فقط قواعد ضروری تایپ‌اسکریپت
+            reactHooks.configs['recommended'], // قواعد ضروری هوک‌ها
+            reactRefresh.configs.vite,         // برای HMR و React Refresh
         ],
         languageOptions: {
             ecmaVersion: 2020,
             globals: globals.browser,
         },
         rules: {
+            // همه رو warning بذار تا فقط errorهای حیاتی بیاد
             'no-unused-vars': 'warn',
             '@typescript-eslint/no-unused-vars': 'warn',
-            'react-refresh/only-export-components': 'off',
-            'prettier/prettier': ['warn', { semi: false }],
+            'react-refresh/only-export-components': 'warn',
         },
-
-        plugins: { prettier },
     },
-    eslintPluginPrettierRecommended,
 ])

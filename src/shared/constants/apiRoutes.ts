@@ -28,12 +28,7 @@ export const API_ROUTES = {
     },
 
     BRANDS: {
-        LIST: '/brands',
-        SEARCH: '/brands',
-        CREATE: '/brands',
-        DETAILS: (id: string) => `/brands/${id}`,
-        UPDATE: (id: string) => `/brands/${id}`,
-        DELETE: (id: string) => `/brands/${id}`,
+        ROOT: '/brands',
     },
 } as const
 

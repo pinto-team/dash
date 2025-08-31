@@ -17,8 +17,6 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { useI18n } from '@/shared/hooks/useI18n'
 
-import { uploadSingleImage } from '../services/brands.api'
-
 type Props = Readonly<{
     value?: string | null
     onChange: (url?: string | null) => void

@@ -1,24 +1,23 @@
 // features/brands/pages/EditBrandPage.tsx
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
-
 import * as React from 'react'
-
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { ROUTES } from '@/app/routes/routes'
 import { SiteHeader } from '@/components/layout/site-header'
 import { Button } from '@/components/ui/button'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/features/sidebar/app-sidebar.tsx'
+import { AppSidebar } from '@/features/sidebar/app-sidebar'
 import { useI18n } from '@/shared/hooks/useI18n'
-import { defaultLogger } from '@/shared/lib/logger.ts'
+import { defaultLogger } from '@/shared/lib/logger'
 
 import BrandForm from '../components/BrandForm'
-import { useBrand, useDeleteBrand, useUpdateBrand } from '../hooks/brands.queries'
-import type { Brand, CreateBrandRequest } from '../services/brands.api'
+import type { BrandData, CreateBrandRequest } from '../model/types'
+import {JSX} from "react";
+import {brandsQueries} from "@/features/brands";
 
-function brandToFormDefaults(b?: Brand): Partial<CreateBrandRequest> {
+function brandToFormDefaults(b?: BrandData): Partial<CreateBrandRequest> {
     if (!b) return {}
     return {
         name: b.name ?? '',
@@ -29,19 +28,23 @@ function brandToFormDefaults(b?: Brand): Partial<CreateBrandRequest> {
     }
 }
 
-export default function EditBrandPage() {
+export default function EditBrandPage(): JSX.Element {
     const { id: rawId } = useParams()
     const id = (rawId || '').trim()
     const navigate = useNavigate()
-    const { data, isLoading, error } = useBrand(id)
+
+    const { data, isLoading, error } = brandsQueries.useDetail(id)
     const update = useUpdateBrand(id)
-    const del = useDeleteBrand()
+    const del = brandsQueries.useDelete(id)
+
     const { t, locale } = useI18n()
     const rtl = (locale?.toLowerCase?.() ?? '').startsWith('fa')
+
     const [apiErrors, setApiErrors] = React.useState<
         ReadonlyArray<{ field: string; message: string }>
     >([])
 
+    // 👀 لاگ وضعیت بارگذاری
     React.useEffect(() => {
         if (isLoading) {
             defaultLogger.info('Loading brand...', { id })
@@ -62,6 +65,7 @@ export default function EditBrandPage() {
     const handleDelete = React.useCallback(() => {
         if (!id) return
         if (!window.confirm(t('brands.confirm_delete'))) return
+
         del.mutate(id, {
             onSuccess: () => {
                 toast.success(t('brands.deleted'))
@@ -84,6 +88,7 @@ export default function EditBrandPage() {
             <SidebarInset>
                 <SiteHeader />
                 <div className="flex-1 p-6 md:p-8 lg:p-10">
+                    {/* Header actions */}
                     <div className="mb-6 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Button
@@ -94,11 +99,7 @@ export default function EditBrandPage() {
                                 aria-label={t('common.back')}
                                 title={t('common.back')}
                             >
-                                {rtl ? (
-                                    <ArrowRight className="h-4 w-4" />
-                                ) : (
-                                    <ArrowLeft className="h-4 w-4" />
-                                )}
+                                {rtl ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
                             </Button>
                             <h1 className="text-2xl font-bold">{t('brands.edit')}</h1>
                         </div>
@@ -112,6 +113,7 @@ export default function EditBrandPage() {
                         </div>
                     </div>
 
+                    {/* Content */}
                     {isLoading || !data ? (
                         <div className="text-sm text-muted-foreground">{t('common.loading')}</div>
                     ) : (
@@ -126,12 +128,8 @@ export default function EditBrandPage() {
                                         navigate(ROUTES.BRANDS)
                                     },
                                     onError: (err) => {
-                                        const resp = (err as { response?: { data?: unknown } })
-                                            .response?.data as
-                                            | {
-                                                  code?: number
-                                                  errors?: Array<{ field: string; message: string }>
-                                              }
+                                        const resp = (err as { response?: { data?: unknown } }).response?.data as
+                                            | { code?: number; errors?: Array<{ field: string; message: string }> }
                                             | undefined
                                         if (resp?.code === 422 && Array.isArray(resp.errors)) {
                                             setApiErrors(resp.errors)

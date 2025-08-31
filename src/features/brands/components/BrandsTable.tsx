@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/table'
 import { useI18n } from '@/shared/hooks/useI18n'
 
-import type { Brand } from '../services/brands.api'
+import type { BrandData } from '../services/brands.api'
 
 type Props = Readonly<{
     items: ReadonlyArray<Brand>

@@ -1,9 +1,8 @@
+// features/brands/pages/AddBrandPage.tsx
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
-
 import * as React from 'react'
 import { JSX } from 'react'
-
 import { useNavigate } from 'react-router-dom'
 
 import { ROUTES } from '@/app/routes/routes'
@@ -11,11 +10,11 @@ import { SiteHeader } from '@/components/layout/site-header'
 import { Button } from '@/components/ui/button'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import BrandForm from '@/features/brands/components/BrandForm'
-import { useCreateBrand } from '@/features/brands/hooks/brands.queries'
-import type { CreateBrandRequest } from '@/features/brands/services/brands.api'
+import type { CreateBrandRequest } from '@/features/brands/model/types'
 import { AppSidebar } from '@/features/sidebar/app-sidebar'
 import { useI18n } from '@/shared/hooks/useI18n'
 import { isRTLLocale } from '@/shared/i18n/utils'
+import { brandsQueries } from '@/features/brands'
 
 const FORM_ID = 'brand-form'
 
@@ -23,32 +22,32 @@ export default function AddBrandPage(): JSX.Element {
     const navigate = useNavigate()
     const { t, locale } = useI18n()
     const rtl = isRTLLocale(locale)
-    const create = useCreateBrand()
 
+    // mutation (envelope-aware: returns BrandData)
+    const createMutation = brandsQueries.useCreate()
+
+    // field-level API errors (422)
     const [apiErrors, setApiErrors] = React.useState<
         ReadonlyArray<{ field: string; message: string }>
     >([])
 
     function handleSubmit(values: CreateBrandRequest) {
         setApiErrors([])
-        create.mutate(values, {
-            onSuccess: (created) => {
-                console.log('Brand')
-                console.log(created)
-                const msg = t('brands.saved_success') ?? 'Brand saved successfully'
-                toast.success(msg)
+
+        createMutation.mutate(values, {
+            onSuccess: () => {
+                toast.success(t('brands.saved_success') ?? 'Brand saved successfully')
                 navigate(ROUTES.BRANDS)
             },
             onError: (err) => {
-                // Try to extract validation errors
                 const resp = (err as { response?: { data?: unknown } }).response?.data as
                     | { code?: number; errors?: Array<{ field: string; message: string }> }
                     | undefined
+
                 if (resp?.code === 422 && Array.isArray(resp.errors)) {
                     setApiErrors(resp.errors)
                 } else {
-                    const msg = t('common.error') ?? 'Something went wrong'
-                    toast.error(msg)
+                    toast.error(t('common.error') ?? 'Something went wrong')
                 }
             },
         })
@@ -67,7 +66,7 @@ export default function AddBrandPage(): JSX.Element {
             <SidebarInset>
                 <SiteHeader />
                 <div className="flex flex-1 flex-col gap-4 p-6 md:gap-6 md:p-8 lg:p-10">
-                    {/* Top bar: Back + Title | Save */}
+                    {/* Top bar */}
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Button
@@ -90,19 +89,19 @@ export default function AddBrandPage(): JSX.Element {
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <Button type="submit" form={FORM_ID} disabled={create.isPending}>
-                                {create.isPending
-                                    ? (t('common.saving') ?? 'Saving...')
-                                    : (t('common.save') ?? 'Save')}
+                            <Button type="submit" form={FORM_ID} disabled={createMutation.isPending}>
+                                {createMutation.isPending
+                                    ? t('common.saving') ?? 'Saving...'
+                                    : t('common.save') ?? 'Save'}
                             </Button>
                         </div>
                     </div>
 
-                    {/* Form card */}
+                    {/* Form */}
                     <BrandForm
                         formId={FORM_ID}
                         onSubmit={handleSubmit}
-                        submitting={create.isPending}
+                        submitting={createMutation.isPending}
                         apiErrors={apiErrors}
                     />
                 </div>

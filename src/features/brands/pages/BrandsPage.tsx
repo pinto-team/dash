@@ -7,10 +7,8 @@
  * - Accessible & ESLint-friendly (no `any`, explicit types, stable callbacks)
  */
 import { toast } from 'sonner'
-
 import * as React from 'react'
 import { JSX, useCallback, useMemo, useState } from 'react'
-
 import { useNavigate } from 'react-router-dom'
 
 import { ROUTES } from '@/app/routes/routes'
@@ -24,7 +22,7 @@ import useDebounced from '@/shared/hooks/useDebounced'
 import { useI18n } from '@/shared/hooks/useI18n'
 
 import BrandsTable from '../components/BrandsTable'
-import { useBrands, useDeleteBrand } from '../hooks/brands.queries'
+import {brandsQueries} from "@/features/brands";
 
 export default function BrandsPage(): JSX.Element {
     const { t } = useI18n()
@@ -33,20 +31,23 @@ export default function BrandsPage(): JSX.Element {
     const [page, setPage] = useState<number>(0) // 0-based UI page
     const [pageSize] = useState<number>(12)
     const [query, setQuery] = useState<string>('')
+
     const debouncedQuery = useDebounced(query, 450)
 
-    const { data, isLoading, error, refetch } = useBrands(pageSize, page + 1, debouncedQuery)
-    const items = data?.items ?? []
-    const total = data?.pagination?.total ?? items.length
-    const totalPagesFromApi = data?.pagination?.total_pages
+    const { data, isLoading, error, refetch } = brandsQueries.useList()
+
+    const items = data?.data ?? []
+    const pagination = data?.meta?.pagination
+    const total = pagination?.total ?? items.length
+    const totalPagesFromApi = pagination?.total_pages
     const totalPages = useMemo<number>(
         () => Math.max(1, totalPagesFromApi ?? Math.ceil(total / pageSize)),
         [totalPagesFromApi, total, pageSize],
     )
-    const hasPrev = data?.pagination?.has_previous ?? page > 0
-    const hasNext = data?.pagination?.has_next ?? page + 1 < totalPages
+    const hasPrev = pagination?.has_previous ?? page > 0
+    const hasNext = pagination?.has_next ?? page + 1 < totalPages
 
-    const deleteMutation = useDeleteBrand()
+    const deleteMutation = brandsQueries.useDelete()
 
     const layoutStyle = useMemo<React.CSSProperties>(
         () =>
@@ -120,9 +121,7 @@ export default function BrandsPage(): JSX.Element {
                             </div>
                         )}
                         {isLoading && items.length === 0 ? (
-                            <div className="text-sm text-muted-foreground">
-                                {t('common.loading')}
-                            </div>
+                            <div className="text-sm text-muted-foreground">{t('common.loading')}</div>
                         ) : (
                             <BrandsTable items={items} onDelete={handleDelete} />
                         )}
