@@ -540,7 +540,7 @@ export const en = {
             unsupportedMediaType: 'Unsupported media type',
             rangeNotSatisfiable: 'Range not satisfiable',
             expectationFailed: 'Expectation failed',
-            teapot: 'I\'m a teapot',
+            teapot: "I'm a teapot",
             unprocessableEntity: 'Unprocessable entity',
             locked: 'Resource locked',
             failedDependency: 'Failed dependency',
@@ -817,11 +817,7 @@ export const en = {
     },
 } as const
 
-type Join<K, P> = K extends string
-    ? P extends string
-        ? `${K}.${P}`
-        : never
-    : never
+type Join<K, P> = K extends string ? (P extends string ? `${K}.${P}` : never) : never
 
 type Paths<T> = {
     [K in keyof T]: T[K] extends Record<string, unknown>

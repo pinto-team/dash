@@ -1,11 +1,13 @@
 // features/auth/pages/LoginPage.tsx
-import { useNavigate, useLocation } from "react-router-dom"
-import { useAuth } from "@/features/auth/hooks/useAuth"
-import { useState } from "react"
-import LoginForm, { LoginFormValues } from "@/features/auth/components/LoginForm"
-import LanguageToggle from "@/components/layout/LanguageToggle.tsx";
-import ThemeToggle from "@/components/layout/ThemeToggle.tsx";
-import { useTranslation } from "@/shared/i18n/useTranslation"
+import { useState } from 'react'
+
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import LanguageToggle from '@/components/layout/LanguageToggle.tsx'
+import ThemeToggle from '@/components/layout/ThemeToggle.tsx'
+import LoginForm, { LoginFormValues } from '@/features/auth/components/LoginForm'
+import { useAuth } from '@/features/auth/hooks/useAuth'
+import { useTranslation } from '@/shared/i18n/useTranslation'
 
 type FromState = { from?: { pathname?: string } }
 
@@ -15,7 +17,7 @@ export default function LoginPage() {
     const nav = useNavigate()
     const loc = useLocation()
     const state = loc.state as FromState | undefined
-    const from = state?.from?.pathname ?? "/dashboard"
+    const from = state?.from?.pathname ?? '/dashboard'
     const [loading, setLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
 

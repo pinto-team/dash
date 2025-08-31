@@ -11,7 +11,7 @@ export class AppError extends Error {
         message: string,
         statusCode: number = 500,
         code: string = 'INTERNAL_ERROR',
-        isOperational: boolean = true
+        isOperational: boolean = true,
     ) {
         super(message)
         this.statusCode = statusCode
@@ -28,7 +28,7 @@ export class AppError extends Error {
             statusCode,
             code,
             stack: this.stack,
-            isOperational
+            isOperational,
         })
     }
 }
@@ -99,21 +99,18 @@ export interface ApiSuccessResponse<T> {
 }
 
 // Response helper functions
-export function createSuccessResponse<T>(
-    data: T,
-    message?: string
-): ApiSuccessResponse<T> {
+export function createSuccessResponse<T>(data: T, message?: string): ApiSuccessResponse<T> {
     return {
         success: true,
         data,
         message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
     }
 }
 
 export function createErrorResponse(
     error: AppError | Error | string,
-    errors?: Record<string, string[]>
+    errors?: Record<string, string[]>,
 ): ApiErrorResponse {
     const message = error instanceof Error ? error.message : error
     const code = error instanceof AppError ? error.code : 'INTERNAL_ERROR'
@@ -123,27 +120,31 @@ export function createErrorResponse(
         message,
         code,
         errors,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
     }
 }
 
 // Error handler for async operations
 export function handleAsyncError<T>(
     promise: Promise<T>,
-    errorMessage: string = 'Operation failed'
+    errorMessage: string = 'Operation failed',
 ): Promise<T> {
     return promise.catch((error) => {
         if (error instanceof AppError) {
             throw error
         }
         // Ignore cancellation errors
-        if (error?.code === 'ERR_CANCELED' || error?.name === 'CanceledError' || error?.message === 'canceled') {
+        if (
+            error?.code === 'ERR_CANCELED' ||
+            error?.name === 'CanceledError' ||
+            error?.message === 'canceled'
+        ) {
             throw error
         }
 
         defaultLogger.error(errorMessage, {
             originalError: error,
-            stack: error.stack
+            stack: error.stack,
         })
 
         throw new AppError(errorMessage, 500, 'INTERNAL_ERROR')

@@ -1,17 +1,16 @@
-import { createBrowserRouter } from "react-router-dom"
-import AppRoot from "@/app/App"
+import { createBrowserRouter } from 'react-router-dom'
 
-import LoginPage from "@/features/auth/pages/LoginPage"
-import DashboardPage from "@/features/dashboard/pages/DashboardPage"
-
+import AppRoot from '@/app/App'
+import { ROUTES } from '@/app/routes/routes'
+import LoginPage from '@/features/auth/pages/LoginPage'
+import AddBrandPage from '@/features/brands/pages/AddBrandPage'
 // Brands
-import BrandsPage from "@/features/brands/pages/BrandsPage"
-import AddBrandPage from "@/features/brands/pages/AddBrandPage"
-import EditBrandPage from "@/features/brands/pages/EditBrandPage"
+import BrandsPage from '@/features/brands/pages/BrandsPage'
+import EditBrandPage from '@/features/brands/pages/EditBrandPage'
+import DashboardPage from '@/features/dashboard/pages/DashboardPage'
 
-import ProtectedRoute from "./ProtectedRoute"
-import NotFound from "./NotFound"
-import { ROUTES } from "@/app/routes/routes"
+import NotFound from './NotFound'
+import ProtectedRoute from './ProtectedRoute'
 
 export const router = createBrowserRouter([
     {
@@ -21,17 +20,17 @@ export const router = createBrowserRouter([
             {
                 element: <ProtectedRoute />,
                 children: [
-                    { index: true, element: <DashboardPage /> },                      // پیش‌فرض = داشبورد
-                    { path: ROUTES.DASHBOARD, element: <DashboardPage /> },           // /dashboard
+                    { index: true, element: <DashboardPage /> }, // پیش‌فرض = داشبورد
+                    { path: ROUTES.DASHBOARD, element: <DashboardPage /> }, // /dashboard
 
                     // Brands
-                    { path: ROUTES.BRANDS, element: <BrandsPage /> },                 // /brands
-                    { path: ROUTES.BRAND_NEW, element: <AddBrandPage /> },            // /brands/new
-                    { path: ROUTES.BRAND_EDIT(), element: <EditBrandPage /> },        // /brands/:id
+                    { path: ROUTES.BRANDS, element: <BrandsPage /> }, // /brands
+                    { path: ROUTES.BRAND_NEW, element: <AddBrandPage /> }, // /brands/new
+                    { path: ROUTES.BRAND_EDIT(), element: <EditBrandPage /> }, // /brands/:id
                 ],
             },
             { path: ROUTES.LOGIN, element: <LoginPage /> },
-            { path: "*", element: <NotFound /> },
+            { path: '*', element: <NotFound /> },
         ],
     },
 ])

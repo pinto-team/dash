@@ -1,16 +1,18 @@
-import { AuthContext } from "./auth-context"
-import {apiLogin, apiMe, apiRefresh} from "@/features/auth/services/auth.api.ts";
-import {HttpError} from "@/lib/http-error.ts";
+import { ReactNode, useEffect, useState } from 'react'
+
+import { apiLogin, apiMe, apiRefresh } from '@/features/auth/services/auth.api.ts'
 import {
+    clearAuthStorage,
     getAccessToken,
-    getRefreshToken,
     getCachedUser,
+    getRefreshToken,
     setCachedUser,
     setTokens,
-    clearAuthStorage,
-} from "@/features/auth/storage.ts"
-import {ReactNode, useEffect, useState} from "react";
-import {AuthUser} from "@/features/auth/types.ts";
+} from '@/features/auth/storage.ts'
+import { AuthUser } from '@/features/auth/types.ts'
+import { HttpError } from '@/lib/http-error.ts'
+
+import { AuthContext } from './auth-context'
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null)
@@ -77,7 +79,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         } catch (err: unknown) {
             if (err instanceof HttpError) throw new Error(err.message)
             if (err instanceof Error) throw err
-            throw new Error("Unknown login error")
+            throw new Error('Unknown login error')
         }
     }
 

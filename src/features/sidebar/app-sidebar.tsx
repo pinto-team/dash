@@ -1,12 +1,19 @@
 // src/components/layout/app-sidebar.tsx
-import * as React from "react"
-import { useMemo } from "react"
+import { IconInnerShadowTop } from '@tabler/icons-react'
+import { ChevronDown, Settings as SettingsIcon } from 'lucide-react'
+
+import * as React from 'react'
+import { useMemo } from 'react'
+
+import { NavLink } from 'react-router-dom'
+
+import { ROUTES } from '@/app/routes/routes.ts'
+import { NavUser } from '@/components/layout/nav-user.tsx'
 import {
-    ChevronDown,
-    Settings as SettingsIcon,
-} from "lucide-react"
-import { NavLink } from "react-router-dom"
-import { IconInnerShadowTop } from "@tabler/icons-react"
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from '@/components/ui/collapsible.tsx'
 import {
     Sidebar,
     SidebarContent,
@@ -21,13 +28,10 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
-} from "@/components/ui/sidebar.tsx"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible.tsx"
-import { NavUser } from "@/components/layout/nav-user.tsx"
-import { useI18n } from "@/shared/hooks/useI18n.ts"
-import { useAuth } from "@/features/auth/hooks/useAuth.ts"
-import { isRTLLocale, getSidebarSide } from "@/shared/i18n/utils.ts"
-import { ROUTES } from "@/app/routes/routes.ts"
+} from '@/components/ui/sidebar.tsx'
+import { useAuth } from '@/features/auth/hooks/useAuth.ts'
+import { useI18n } from '@/shared/hooks/useI18n.ts'
+import { getSidebarSide, isRTLLocale } from '@/shared/i18n/utils.ts'
 
 type TranslateFn = (key: string) => string
 
@@ -48,13 +52,12 @@ type MenuItem = {
 // ======================
 const itemsSchema: MenuItem[] = [
     {
-        titleKey: "menu.basic",
+        titleKey: 'menu.basic',
         icon: SettingsIcon,
         children: [
-            { titleKey: "menu.basic.brands", url: ROUTES.BRANDS },          // /brands
+            { titleKey: 'menu.basic.brands', url: ROUTES.BRANDS }, // /brands
         ],
     },
-
 ]
 
 // ================
@@ -68,9 +71,9 @@ const translateItems = (items: MenuItem[], t: TranslateFn) =>
     }))
 
 function MenuSection({
-                         label,
-                         items,
-                     }: {
+    label,
+    items,
+}: {
     label: string
     items: ReturnType<typeof translateItems>
 }) {
@@ -95,7 +98,9 @@ function MenuSection({
                                     <CollapsibleContent className="data-[state=closed]:hidden">
                                         <SidebarMenuSub>
                                             {item.children.map((subItem) => (
-                                                <SidebarMenuSubItem key={`${item.titleKey}-${subItem.url}`}>
+                                                <SidebarMenuSubItem
+                                                    key={`${item.titleKey}-${subItem.url}`}
+                                                >
                                                     <SidebarMenuSubButton asChild>
                                                         <NavLink
                                                             to={subItem.url}
@@ -112,14 +117,17 @@ function MenuSection({
                             </Collapsible>
                         ) : (
                             <SidebarMenuItem key={item.titleKey}>
-                                <SidebarMenuButton asChild className="w-full flex items-center text-sidebar-foreground text-start">
-                                    <NavLink to={item.url ?? "#"}>
+                                <SidebarMenuButton
+                                    asChild
+                                    className="w-full flex items-center text-sidebar-foreground text-start"
+                                >
+                                    <NavLink to={item.url ?? '#'}>
                                         <item.icon className="shrink-0 me-2" />
                                         <span className="flex-1">{item.title}</span>
                                     </NavLink>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
-                        )
+                        ),
                     )}
                 </SidebarMenu>
             </SidebarGroupContent>
@@ -136,29 +144,29 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
     const user = authUser
         ? {
-            name: `${authUser.firstName} ${authUser.lastName}`.trim() || authUser.username,
-            email: authUser.email,
-            avatar: authUser.image ?? "/avatars/placeholder.png",
-        }
+              name: `${authUser.firstName} ${authUser.lastName}`.trim() || authUser.username,
+              email: authUser.email,
+              avatar: authUser.image ?? '/avatars/placeholder.png',
+          }
         : {
-            name: t("guest"),
-            email: "",
-            avatar: "/avatars/placeholder.png",
-        }
+              name: t('guest'),
+              email: '',
+              avatar: '/avatars/placeholder.png',
+          }
 
     const isRTL = isRTLLocale(locale)
     const side = getSidebarSide(locale)
     const items = useMemo(() => translateItems(itemsSchema, t), [t])
 
     return (
-        <Sidebar collapsible="offcanvas" side={side} dir={isRTL ? "rtl" : "ltr"} {...props}>
+        <Sidebar collapsible="offcanvas" side={side} dir={isRTL ? 'rtl' : 'ltr'} {...props}>
             <SidebarHeader className="data-[slot=sidebar-menu-button]:!p-1.5">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild className="text-sidebar-foreground">
                             <a href="#">
                                 <IconInnerShadowTop className="!size-5 me-2" />
-                                <span className="text-base font-semibold">{t("appTitle")}</span>
+                                <span className="text-base font-semibold">{t('appTitle')}</span>
                             </a>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -166,7 +174,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
 
             <SidebarContent>
-                <MenuSection label={t("appTitle")} items={items} />
+                <MenuSection label={t('appTitle')} items={items} />
             </SidebarContent>
 
             <SidebarFooter>

@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@import "@/design-system/globals.css";
-@import "@/design-system/tokens.css";
+@import 'tailwindcss';
+@import '@/design-system/globals.css';
+@import '@/design-system/tokens.css';
 
 @custom-variant dark (&:is(.dark *));
 @plugin "tailwindcss-animate";
@@ -8,19 +8,31 @@
 /* Base resets */
 @layer base {
     html {
-        font-family: IranSansX, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+        font-family:
+            IranSansX,
+            ui-sans-serif,
+            system-ui,
+            -apple-system,
+            Segoe UI,
+            Roboto,
+            Arial,
+            'Noto Sans',
+            'Apple Color Emoji',
+            'Segoe UI Emoji';
     }
 
     /* RTL language font adjustments */
-    html[lang="fa"] {
-        font-family: IranSansX, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    html[lang='fa'] {
+        font-family: IranSansX, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    html[lang="ar"] {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    html[lang='ar'] {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    * { @apply border-border; }
+    * {
+        @apply border-border;
+    }
     body {
         @apply bg-background text-foreground;
         overflow-y: auto; /* اطمینان از فعال بودن اسکرول مرورگر */

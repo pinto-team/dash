@@ -1,8 +1,8 @@
 // features/auth/storage.ts
 export const LS_KEYS = {
-    ACCESS_TOKEN: "auth.accessToken",
-    REFRESH_TOKEN: "auth.refreshToken",
-    USER: "auth.user",
+    ACCESS_TOKEN: 'auth.accessToken',
+    REFRESH_TOKEN: 'auth.refreshToken',
+    USER: 'auth.user',
 } as const
 
 export function getAccessToken(): string | null {
@@ -45,4 +45,3 @@ export function clearAuthStorage(): void {
     clearTokens()
     clearCachedUser()
 }
-

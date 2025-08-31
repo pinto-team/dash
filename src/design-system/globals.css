@@ -1,8 +1,8 @@
-    /* ===== Global Theme Variables (OKLCH) ===== */
+/* ===== Global Theme Variables (OKLCH) ===== */
 
-    /* Light */
+/* Light */
 :root {
-    --radius: .625rem;
+    --radius: 0.625rem;
 
     /* Base */
     --background: oklch(100% 0 0);
@@ -127,12 +127,12 @@
     text-align: start;
 }
 
-.rtl [data-side="right"] {
+.rtl [data-side='right'] {
     border-inline-start: 1px solid var(--sidebar-border);
     border-inline-end: none;
 }
 
-.rtl [data-side="left"] {
+.rtl [data-side='left'] {
     border-inline-end: 1px solid var(--sidebar-border);
     border-inline-start: none;
 }

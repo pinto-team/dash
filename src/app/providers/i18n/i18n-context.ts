@@ -1,5 +1,6 @@
-import { createContext, Dispatch, SetStateAction } from "react"
-import type { Locale } from "@/shared/i18n/messages"
+import { Dispatch, SetStateAction, createContext } from 'react'
+
+import type { Locale } from '@/shared/i18n/messages'
 
 export type I18nCtxType = {
     locale: Locale
