@@ -3,7 +3,7 @@ import type { TOptions } from 'i18next'
 
 import { useTranslation as useI18nTranslation } from 'react-i18next'
 
-import type { LocaleKey } from './locales/en'
+import type { LocaleKey } from './en.ts'
 
 export function useTranslation() {
     const { t, i18n } = useI18nTranslation()
