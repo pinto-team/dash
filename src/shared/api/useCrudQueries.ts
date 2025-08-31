@@ -22,7 +22,12 @@ export function createCrudHooks<TData, TCreate, TUpdate>(
             const qc = useQueryClient()
             return useMutation({
                 mutationFn: api.create,
-                onSuccess: () => qc.invalidateQueries({ queryKey: [key, 'list'] }),
+                onSuccess: (data) => {
+                    qc.invalidateQueries({ queryKey: [key, 'list'] })
+                    const id = (data as any)?.data?.id
+                    if (id !== undefined && id !== null)
+                        qc.invalidateQueries({ queryKey: [key, 'detail', id] })
+                },
             })
         },
 
@@ -31,7 +36,10 @@ export function createCrudHooks<TData, TCreate, TUpdate>(
             return useMutation({
                 mutationFn: ({ id, payload }: { id: string | number; payload: TUpdate }) =>
                     api.update(id, payload),
-                onSuccess: () => qc.invalidateQueries({ queryKey: [key, 'list'] }),
+                onSuccess: (_, { id }) => {
+                    qc.invalidateQueries({ queryKey: [key, 'list'] })
+                    qc.invalidateQueries({ queryKey: [key, 'detail', id] })
+                },
             })
         },
 
@@ -39,7 +47,10 @@ export function createCrudHooks<TData, TCreate, TUpdate>(
             const qc = useQueryClient()
             return useMutation({
                 mutationFn: api.remove,
-                onSuccess: () => qc.invalidateQueries({ queryKey: [key, 'list'] }),
+                onSuccess: (_, id) => {
+                    qc.invalidateQueries({ queryKey: [key, 'list'] })
+                    qc.invalidateQueries({ queryKey: [key, 'detail', id] })
+                },
             })
         },
     }
