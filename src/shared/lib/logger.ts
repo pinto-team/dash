@@ -21,12 +21,13 @@ export class Logger {
 
     private formatMessage(level: string, message: string, meta?: Record<string, unknown>): string {
         const timestamp = new Date().toISOString()
-        const contextStr = Object.keys(this.context).length > 0
-            ? ` [${Object.entries(this.context).map(([k, v]) => `${k}:${v}`).join(', ')}]`
-            : ''
-        const metaStr = meta && Object.keys(meta).length > 0
-            ? ` ${JSON.stringify(meta)}`
-            : ''
+        const contextStr =
+            Object.keys(this.context).length > 0
+                ? ` [${Object.entries(this.context)
+                      .map(([k, v]) => `${k}:${v}`)
+                      .join(', ')}]`
+                : ''
+        const metaStr = meta && Object.keys(meta).length > 0 ? ` ${JSON.stringify(meta)}` : ''
 
         return `[${timestamp}] ${level.toUpperCase()}:${contextStr} ${message}${metaStr}`
     }
@@ -52,11 +53,16 @@ export class Logger {
 
     private getLevelColor(level: string): string {
         switch (level) {
-            case 'error': return 'color: #ef4444; font-weight: bold;'
-            case 'warn': return 'color: #f59e0b; font-weight: bold;'
-            case 'info': return 'color: #3b82f6; font-weight: bold;'
-            case 'debug': return 'color: #10b981; font-weight: bold;'
-            default: return 'color: #6b7280;'
+            case 'error':
+                return 'color: #ef4444; font-weight: bold;'
+            case 'warn':
+                return 'color: #f59e0b; font-weight: bold;'
+            case 'info':
+                return 'color: #3b82f6; font-weight: bold;'
+            case 'debug':
+                return 'color: #10b981; font-weight: bold;'
+            default:
+                return 'color: #6b7280;'
         }
     }
 
@@ -93,5 +99,5 @@ export const consoleLogger = {
     warn: (message: string, ...args: unknown[]) => console.warn(message, ...args),
     error: (message: string, ...args: unknown[]) => console.error(message, ...args),
     debug: (message: string, ...args: unknown[]) => console.debug(message, ...args),
-    log: (message: string, ...args: unknown[]) => console.log(message, ...args)
+    log: (message: string, ...args: unknown[]) => console.log(message, ...args),
 }

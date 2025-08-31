@@ -7,6 +7,7 @@ This directory contains the font configuration for IRANSansX font family.
 To complete the font setup, you need to add the following font files to this directory:
 
 ### Required Files:
+
 - `IRANSansX-Regular.woff2` (Regular weight - 400)
 - `IRANSansX-Regular.woff` (Regular weight - 400)
 - `IRANSansX-Regular.ttf` (Regular weight - 400)
@@ -29,19 +30,22 @@ To complete the font setup, you need to add the following font files to this dir
 ## How to Use
 
 ### In CSS:
+
 ```css
 body {
-  font-family: 'IRANSansX', system-ui, sans-serif;
+    font-family: 'IRANSansX', system-ui, sans-serif;
 }
 ```
 
 ### In Tailwind CSS:
+
 ```html
 <div class="font-iransans">متن فارسی</div>
 <div class="font-iransansx">متن فارسی</div>
 ```
 
 ### Font Weights Available:
+
 - `font-light` (300)
 - `font-normal` (400)
 - `font-medium` (500)

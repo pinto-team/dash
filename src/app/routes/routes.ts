@@ -1,11 +1,11 @@
 export const ROUTES = {
-    ROOT: "/",
-    LOGIN: "/login",
+    ROOT: '/',
+    LOGIN: '/login',
 
-    DASHBOARD: "/dashboard",
+    DASHBOARD: '/dashboard',
 
     // Brands
-    BRANDS: "/brands",
-    BRAND_NEW: "/brands/new",
-    BRAND_EDIT: (id = ":id") => `/brands/${id}`,
+    BRANDS: '/brands',
+    BRAND_NEW: '/brands/new',
+    BRAND_EDIT: (id = ':id') => `/brands/${id}`,
 } as const

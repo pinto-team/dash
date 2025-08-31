@@ -1,20 +1,23 @@
-import * as React from "react"
-import { useNavigate } from "react-router-dom"
-import { AppSidebar } from "@/features/sidebar/app-sidebar"
-import { SiteHeader } from "@/components/layout/site-header"
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, ArrowRight } from "lucide-react"
-import { useI18n } from "@/shared/hooks/useI18n"
-import { isRTLLocale } from "@/shared/i18n/utils"
-import { ROUTES } from "@/app/routes/routes"
-import BrandForm from "@/features/brands/components/BrandForm"
-import { useCreateBrand } from "@/features/brands/hooks/brands.queries"
-import type { CreateBrandRequest } from "@/features/brands/services/brands.api"
-import { toast } from "sonner"
-import {JSX} from "react";
+import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { toast } from 'sonner'
 
-const FORM_ID = "brand-form"
+import * as React from 'react'
+import { JSX } from 'react'
+
+import { useNavigate } from 'react-router-dom'
+
+import { ROUTES } from '@/app/routes/routes'
+import { SiteHeader } from '@/components/layout/site-header'
+import { Button } from '@/components/ui/button'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import BrandForm from '@/features/brands/components/BrandForm'
+import { useCreateBrand } from '@/features/brands/hooks/brands.queries'
+import type { CreateBrandRequest } from '@/features/brands/services/brands.api'
+import { AppSidebar } from '@/features/sidebar/app-sidebar'
+import { useI18n } from '@/shared/hooks/useI18n'
+import { isRTLLocale } from '@/shared/i18n/utils'
+
+const FORM_ID = 'brand-form'
 
 export default function AddBrandPage(): JSX.Element {
     const navigate = useNavigate()
@@ -22,15 +25,17 @@ export default function AddBrandPage(): JSX.Element {
     const rtl = isRTLLocale(locale)
     const create = useCreateBrand()
 
-    const [apiErrors, setApiErrors] = React.useState<ReadonlyArray<{ field: string; message: string }>>([])
+    const [apiErrors, setApiErrors] = React.useState<
+        ReadonlyArray<{ field: string; message: string }>
+    >([])
 
     function handleSubmit(values: CreateBrandRequest) {
         setApiErrors([])
         create.mutate(values, {
             onSuccess: (created) => {
-                console.log("Brand")
+                console.log('Brand')
                 console.log(created)
-                const msg = t("brands.saved_success") ?? "Brand saved successfully"
+                const msg = t('brands.saved_success') ?? 'Brand saved successfully'
                 toast.success(msg)
                 navigate(ROUTES.BRANDS)
             },
@@ -42,7 +47,7 @@ export default function AddBrandPage(): JSX.Element {
                 if (resp?.code === 422 && Array.isArray(resp.errors)) {
                     setApiErrors(resp.errors)
                 } else {
-                    const msg = t("common.error") ?? "Something went wrong"
+                    const msg = t('common.error') ?? 'Something went wrong'
                     toast.error(msg)
                 }
             },
@@ -50,7 +55,14 @@ export default function AddBrandPage(): JSX.Element {
     }
 
     return (
-        <SidebarProvider style={{ "--sidebar-width": "calc(var(--spacing)*72)", "--header-height": "calc(var(--spacing)*12)" } as React.CSSProperties}>
+        <SidebarProvider
+            style={
+                {
+                    '--sidebar-width': 'calc(var(--spacing)*72)',
+                    '--header-height': 'calc(var(--spacing)*12)',
+                } as React.CSSProperties
+            }
+        >
             <AppSidebar variant="inset" />
             <SidebarInset>
                 <SiteHeader />
@@ -63,23 +75,25 @@ export default function AddBrandPage(): JSX.Element {
                                 variant="ghost"
                                 className="shadow-none"
                                 onClick={() => navigate(-1)}
-                                aria-label={t("common.back") ?? "Back"}
-                                title={t("common.back") ?? "Back"}
+                                aria-label={t('common.back') ?? 'Back'}
+                                title={t('common.back') ?? 'Back'}
                             >
-                                {rtl ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
+                                {rtl ? (
+                                    <ArrowRight className="h-4 w-4" />
+                                ) : (
+                                    <ArrowLeft className="h-4 w-4" />
+                                )}
                             </Button>
                             <h1 className="text-2xl font-bold tracking-tight">
-                                {t("brands.add") ?? "Add Brand"}
+                                {t('brands.add') ?? 'Add Brand'}
                             </h1>
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <Button
-                                type="submit"
-                                form={FORM_ID}
-                                disabled={create.isPending}
-                            >
-                                {create.isPending ? (t("common.saving") ?? "Saving...") : (t("common.save") ?? "Save")}
+                            <Button type="submit" form={FORM_ID} disabled={create.isPending}>
+                                {create.isPending
+                                    ? (t('common.saving') ?? 'Saving...')
+                                    : (t('common.save') ?? 'Save')}
                             </Button>
                         </div>
                     </div>

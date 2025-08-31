@@ -1,7 +1,9 @@
-import * as React from "react"
-import { CheckCircle2, XCircle, Info } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {JSX} from "react";
+import { CheckCircle2, Info, XCircle } from 'lucide-react'
+
+import * as React from 'react'
+import { JSX } from 'react'
+
+import { Button } from '@/components/ui/button'
 
 type Action = Readonly<{
     label: string
@@ -11,7 +13,7 @@ type Action = Readonly<{
 type Props = Readonly<{
     open: boolean
     onOpenChange: (open: boolean) => void
-    variant?: "success" | "error" | "info"
+    variant?: 'success' | 'error' | 'info'
     title: string
     description?: string
     actions?: Action[]
@@ -23,22 +25,22 @@ type Props = Readonly<{
  * - Centered card with overlay
  */
 export default function ResultDialog({
-                                         open,
-                                         onOpenChange,
-                                         variant = "info",
-                                         title,
-                                         description,
-                                         actions = [],
-                                     }: Props): JSX.Element | null {
+    open,
+    onOpenChange,
+    variant = 'info',
+    title,
+    description,
+    actions = [],
+}: Props): JSX.Element | null {
     if (!open) return null
 
-    const Icon = variant === "success" ? CheckCircle2 : variant === "error" ? XCircle : Info
+    const Icon = variant === 'success' ? CheckCircle2 : variant === 'error' ? XCircle : Info
     const iconClass =
-        variant === "success"
-            ? "text-green-600 dark:text-green-500"
-            : variant === "error"
-                ? "text-red-600 dark:text-red-500"
-                : "text-primary"
+        variant === 'success'
+            ? 'text-green-600 dark:text-green-500'
+            : variant === 'error'
+              ? 'text-red-600 dark:text-red-500'
+              : 'text-primary'
 
     return (
         <div
@@ -60,11 +62,7 @@ export default function ResultDialog({
                         {title}
                     </h2>
                 </div>
-                {description && (
-                    <p className="mb-5 text-sm text-muted-foreground">
-                        {description}
-                    </p>
-                )}
+                {description && <p className="mb-5 text-sm text-muted-foreground">{description}</p>}
                 <div className="flex justify-end gap-2">
                     {actions.map((a, idx) => (
                         <Button key={idx} onClick={a.onClick}>

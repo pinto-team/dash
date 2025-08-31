@@ -7,15 +7,17 @@
  * - Size control via className (e.g., max-h-64)
  * - No hardcoded colors (token-based utilities only)
  */
+import { Loader2, X } from 'lucide-react'
+import { toast } from 'sonner'
 
-import * as React from "react"
-import { X, Loader2 } from "lucide-react"
-import { uploadSingleImage } from "../services/brands.api"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { toast } from "sonner"
-import { useI18n } from "@/shared/hooks/useI18n"
-import {JSX} from "react";
+import * as React from 'react'
+import { JSX } from 'react'
+
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { useI18n } from '@/shared/hooks/useI18n'
+
+import { uploadSingleImage } from '../services/brands.api'
 
 type Props = Readonly<{
     value?: string | null
@@ -24,20 +26,20 @@ type Props = Readonly<{
     disabled?: boolean
     maxSizeMB?: number
     /** Aspect ratio of preview box */
-    aspect?: "square" | "video"
+    aspect?: 'square' | 'video'
     /** Extra classes for the dropzone container (e.g., max-h-64) */
     className?: string
 }>
 
 export default function BrandLogoUploader({
-                                              value,
-                                              onChange,
-                                              label,
-                                              disabled = false,
-                                              maxSizeMB = 5,
-                                              aspect = "square",
-                                              className,
-                                          }: Props): JSX.Element {
+    value,
+    onChange,
+    label,
+    disabled = false,
+    maxSizeMB = 5,
+    aspect = 'square',
+    className,
+}: Props): JSX.Element {
     const { t } = useI18n()
     const [dragOver, setDragOver] = React.useState(false)
     const [uploading, setUploading] = React.useState(false)
@@ -52,58 +54,71 @@ export default function BrandLogoUploader({
         }
     }, [localPreview])
 
-    const validateFile = React.useCallback((file: File): boolean => {
-        if (!file.type.startsWith("image/")) {
-            toast.error(t("uploader.errors.type_image_only") || "Only image files are allowed")
-            return false
-        }
-        const maxBytes = maxSizeMB * 1024 * 1024
-        if (file.size > maxBytes) {
-            toast.error(
-                t("uploader.errors.max_size", { size: maxSizeMB }) ||
-                `Max file size is ${maxSizeMB}MB`
-            )
-            return false
-        }
-        return true
-    }, [maxSizeMB, t])
+    const validateFile = React.useCallback(
+        (file: File): boolean => {
+            if (!file.type.startsWith('image/')) {
+                toast.error(t('uploader.errors.type_image_only') || 'Only image files are allowed')
+                return false
+            }
+            const maxBytes = maxSizeMB * 1024 * 1024
+            if (file.size > maxBytes) {
+                toast.error(
+                    t('uploader.errors.max_size', { size: maxSizeMB }) ||
+                        `Max file size is ${maxSizeMB}MB`,
+                )
+                return false
+            }
+            return true
+        },
+        [maxSizeMB, t],
+    )
 
-    const startPreviewAndUpload = React.useCallback(async (file: File) => {
-        if (!validateFile(file) || disabled) return
-        if (localPreview) URL.revokeObjectURL(localPreview)
-        const objectUrl = URL.createObjectURL(file)
-        setLocalPreview(objectUrl)
+    const startPreviewAndUpload = React.useCallback(
+        async (file: File) => {
+            if (!validateFile(file) || disabled) return
+            if (localPreview) URL.revokeObjectURL(localPreview)
+            const objectUrl = URL.createObjectURL(file)
+            setLocalPreview(objectUrl)
 
-        abortRef.current?.abort()
-        abortRef.current = new AbortController()
+            abortRef.current?.abort()
+            abortRef.current = new AbortController()
 
-        try {
-            setUploading(true)
-            const url = await uploadSingleImage(file, abortRef.current.signal)
-            onChange(url)
-            toast.success(t("uploader.success") || "Upload completed")
-            URL.revokeObjectURL(objectUrl)
-            setLocalPreview(null)
-        } catch (err: unknown) {
-            if (err instanceof DOMException && err.name === "AbortError") return
-            const msg = err instanceof Error ? err.message : (t("uploader.errors.generic") as string)
-            toast.error(msg)
-        } finally {
-            setUploading(false)
-        }
-    }, [disabled, localPreview, onChange, t, validateFile])
+            try {
+                setUploading(true)
+                const url = await uploadSingleImage(file, abortRef.current.signal)
+                onChange(url)
+                toast.success(t('uploader.success') || 'Upload completed')
+                URL.revokeObjectURL(objectUrl)
+                setLocalPreview(null)
+            } catch (err: unknown) {
+                if (err instanceof DOMException && err.name === 'AbortError') return
+                const msg =
+                    err instanceof Error ? err.message : (t('uploader.errors.generic') as string)
+                toast.error(msg)
+            } finally {
+                setUploading(false)
+            }
+        },
+        [disabled, localPreview, onChange, t, validateFile],
+    )
 
-    const handleFiles = React.useCallback((files: FileList | null) => {
-        if (!files || files.length === 0) return
-        void startPreviewAndUpload(files[0])
-    }, [startPreviewAndUpload])
+    const handleFiles = React.useCallback(
+        (files: FileList | null) => {
+            if (!files || files.length === 0) return
+            void startPreviewAndUpload(files[0])
+        },
+        [startPreviewAndUpload],
+    )
 
-    const onDrop = React.useCallback((e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault()
-        setDragOver(false)
-        if (disabled) return
-        void handleFiles(e.dataTransfer.files)
-    }, [disabled, handleFiles])
+    const onDrop = React.useCallback(
+        (e: React.DragEvent<HTMLDivElement>) => {
+            e.preventDefault()
+            setDragOver(false)
+            if (disabled) return
+            void handleFiles(e.dataTransfer.files)
+        },
+        [disabled, handleFiles],
+    )
 
     const onDragOver = React.useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
@@ -116,37 +131,40 @@ export default function BrandLogoUploader({
         if (!disabled) inputRef.current?.click()
     }, [disabled])
 
-    const clearImage = React.useCallback((e?: React.MouseEvent<HTMLButtonElement>) => {
-        e?.stopPropagation()
-        onChange(null)
-        if (localPreview) {
-            URL.revokeObjectURL(localPreview)
-            setLocalPreview(null)
-        }
-    }, [localPreview, onChange])
+    const clearImage = React.useCallback(
+        (e?: React.MouseEvent<HTMLButtonElement>) => {
+            e?.stopPropagation()
+            onChange(null)
+            if (localPreview) {
+                URL.revokeObjectURL(localPreview)
+                setLocalPreview(null)
+            }
+        },
+        [localPreview, onChange],
+    )
 
     const shownSrc = localPreview || value || undefined
-    const aspectClass = aspect === "square" ? "aspect-square" : "aspect-video"
+    const aspectClass = aspect === 'square' ? 'aspect-square' : 'aspect-video'
 
     const dropZoneClassName = [
-        "relative flex w-full items-center justify-center rounded-xl border border-dashed p-4",
+        'relative flex w-full items-center justify-center rounded-xl border border-dashed p-4',
         aspectClass,
-        dragOver ? "bg-muted/50" : "bg-muted/20",
-        disabled ? "opacity-60 pointer-events-none" : "cursor-pointer",
-        className ?? "",
-    ].join(" ")
+        dragOver ? 'bg-muted/50' : 'bg-muted/20',
+        disabled ? 'opacity-60 pointer-events-none' : 'cursor-pointer',
+        className ?? '',
+    ].join(' ')
 
     return (
         <div className="grid gap-2">
-            <Label>{label ?? (t("brands.form.logo") as string)}</Label>
+            <Label>{label ?? (t('brands.form.logo') as string)}</Label>
 
             <div
                 className={dropZoneClassName}
                 role="button"
                 tabIndex={0}
-                aria-label={t("uploader.aria.drop_or_click") as string}
+                aria-label={t('uploader.aria.drop_or_click') as string}
                 onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
+                    if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault()
                         openPicker()
                     }
@@ -160,7 +178,7 @@ export default function BrandLogoUploader({
                     <div className="relative h-full w-full overflow-hidden rounded-lg">
                         <img
                             src={shownSrc}
-                            alt={t("brands.logo_alt") as string}
+                            alt={t('brands.logo_alt') as string}
                             className="h-full w-full object-contain"
                             loading="lazy"
                             decoding="async"
@@ -174,21 +192,21 @@ export default function BrandLogoUploader({
                             onClick={clearImage}
                         >
                             <X className="h-4 w-4" />
-                            {t("uploader.actions.remove")}
+                            {t('uploader.actions.remove')}
                         </Button>
 
                         {uploading && (
                             <div className="absolute inset-0 grid place-items-center rounded-lg bg-background/60 backdrop-blur">
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <Loader2 className="h-4 w-4 animate-spin" />
-                                    <span>{t("uploader.status.uploading") as string}</span>
+                                    <span>{t('uploader.status.uploading') as string}</span>
                                 </div>
                             </div>
                         )}
                     </div>
                 ) : (
                     <div className="text-center text-sm text-muted-foreground">
-                        {t("uploader.hint.drag_or_click") as string}
+                        {t('uploader.hint.drag_or_click') as string}
                     </div>
                 )}
             </div>

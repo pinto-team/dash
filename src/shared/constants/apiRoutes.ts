@@ -1,5 +1,5 @@
 // shared/constants/apiRoutes.ts
-import { API_CONFIG } from "@/shared/config/api.config"
+import { API_CONFIG } from '@/shared/config/api.config'
 
 export const API_ROUTES = {
     AUTH: {
@@ -12,7 +12,7 @@ export const API_ROUTES = {
         RESET_PASSWORD: '/auth/reset-password',
         VERIFY_EMAIL: '/auth/verify-email',
     },
-    
+
     DASHBOARD: {
         STATS: '/dashboard/stats',
         CHARTS: '/dashboard/charts',
@@ -26,8 +26,6 @@ export const API_ROUTES = {
         GET: (id: string | number) => `/files/${id}`,
         THUMBNAIL: (id: string | number) => `/files/${id}/thumbnail`,
     },
-    
-
 
     BRANDS: {
         LIST: '/brands',
@@ -37,7 +35,6 @@ export const API_ROUTES = {
         UPDATE: (id: string) => `/brands/${id}`,
         DELETE: (id: string) => `/brands/${id}`,
     },
-
 } as const
 
 export type ApiRoute = typeof API_ROUTES

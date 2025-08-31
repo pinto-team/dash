@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet } from 'react-router-dom'
 
 export default function AppRoot() {
     return (
@@ -7,5 +7,5 @@ export default function AppRoot() {
                 <Outlet />
             </div>
         </div>
-    );
+    )
 }

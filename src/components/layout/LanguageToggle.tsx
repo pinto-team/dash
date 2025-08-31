@@ -1,24 +1,22 @@
-import { Button } from "@/components/ui/button.tsx";
+import { Check, Globe } from 'lucide-react'
+
+import { Button } from '@/components/ui/button.tsx'
 import {
     DropdownMenu,
-    DropdownMenuTrigger,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu.tsx";
-import { Check, Globe } from "lucide-react";
-import { useI18n } from "@/shared/hooks/useI18n.ts";
-import type { Locale } from "@/shared/i18n/messages.ts";
-import { getLocaleDisplayName, getTextDirection } from "@/shared/i18n/utils.ts";
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.tsx'
+import { useI18n } from '@/shared/hooks/useI18n.ts'
+import type { Locale } from '@/shared/i18n/messages.ts'
+import { getLocaleDisplayName, getTextDirection } from '@/shared/i18n/utils.ts'
 
-const LANGS: { code: Locale }[] = [
-    { code: "en" },
-    { code: "fa" },
-];
+const LANGS: { code: Locale }[] = [{ code: 'en' }, { code: 'fa' }]
 
 export default function LanguageToggle() {
-    const { locale, setLocale, t } = useI18n();
+    const { locale, setLocale, t } = useI18n()
 
     return (
         <DropdownMenu>
@@ -33,7 +31,7 @@ export default function LanguageToggle() {
                 className="min-w-44 text-start"
                 style={{ direction: getTextDirection(locale) }}
             >
-                <DropdownMenuLabel>{t("changeLanguage")}</DropdownMenuLabel>
+                <DropdownMenuLabel>{t('changeLanguage')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {LANGS.map((l) => (
                     <DropdownMenuItem
@@ -47,5 +45,5 @@ export default function LanguageToggle() {
                 ))}
             </DropdownMenuContent>
         </DropdownMenu>
-    );
+    )
 }

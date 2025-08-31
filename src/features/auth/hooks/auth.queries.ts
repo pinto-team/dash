@@ -1,14 +1,10 @@
 // features/auth/hooks/auth.queries.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { 
-    apiLogin, 
-    apiMe, 
-    apiLogout, 
-    apiRegister, 
-    apiForgotPassword 
-} from '../services/auth.api'
-import { getAccessToken, clearAuthStorage } from '../storage'
+
 import { defaultLogger } from '@/shared/lib/logger'
+
+import { apiForgotPassword, apiLogin, apiLogout, apiMe, apiRegister } from '../services/auth.api'
+import { clearAuthStorage, getAccessToken } from '../storage'
 
 // Query keys
 export const authQueryKeys = {
@@ -62,7 +58,7 @@ export function useLogout() {
 // User profile query
 export function useUserProfile() {
     const token = getAccessToken()
-    
+
     return useQuery({
         queryKey: authQueryKeys.profile(),
         queryFn: () => apiMe(token!),
@@ -97,7 +93,10 @@ export function useRegister() {
 
 // Forgot password mutation
 export function useForgotPassword() {
-    const logger = defaultLogger.withContext({ component: 'auth.queries', action: 'useForgotPassword' })
+    const logger = defaultLogger.withContext({
+        component: 'auth.queries',
+        action: 'useForgotPassword',
+    })
 
     return useMutation({
         mutationFn: (email: string) => apiForgotPassword(email),
