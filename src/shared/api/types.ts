@@ -20,7 +20,7 @@ export interface ApiMeta {
 }
 
 /** Generic envelope for all API responses */
-export interface ApiResponse<T> {
+export interface ApiResponse<T = unknown> {
     data: T
     meta: ApiMeta
 }

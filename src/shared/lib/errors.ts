@@ -74,14 +74,7 @@ export class RateLimitError extends AppError {
 }
 
 // Standardized API response types
-export interface ApiResponse<T = unknown> {
-    success: boolean
-    data?: T
-    message?: string
-    code?: string
-    errors?: Record<string, string[]>
-    timestamp: string
-}
+export type { ApiResponse } from '../api/types'
 
 export interface ApiErrorResponse {
     success: false
