@@ -1,4 +1,15 @@
 // shared/config/api.config.ts
+/**
+ * Central API configuration for all services.
+ *
+ * Environment variables:
+ * - VITE_API_URL: default base url for monolith/back-compat
+ * - VITE_AUTH_API_URL: auth service base url
+ * - VITE_CATALOG_API_URL: catalog service base url
+ * - VITE_ENABLE_MSW: enable Mock Service Worker for local development
+ *
+ * Development flags only affect logging and do not change behavior.
+ */
 
 export const API_CONFIG = {
     // Main API URL (fallback for backward compatibility)

@@ -1,3 +1,18 @@
+/**
+ * Axios client factory and preconfigured instances.
+ *
+ * Responsibilities:
+ * - Configure base axios instances per feature with sensible defaults
+ * - Attach Authorization header from storage when enabled
+ * - Log requests/responses in development
+ * - Handle 401 responses with a robust single-flight refresh flow
+ * - Queue pending 401 requests until a new token is issued
+ *
+ * How refresh works:
+ * - On a 401, the first request triggers a refresh call using refresh token
+ * - Concurrent 401s are queued and resolved when refresh succeeds
+ * - Original requests are retried with the new access token
+ */
 import axios, {
     AxiosError,
     AxiosHeaders,
@@ -15,16 +30,19 @@ import {
 import { API_CONFIG } from '@/shared/config/api.config'
 import { defaultLogger } from '@/shared/lib/logger'
 
+/** Resolver pair used to unblock queued requests after refresh */
 type PendingResolver = {
     resolve: (token: string) => void
     reject: (reason?: unknown) => void
 }
 
+/** Minimal shape returned by the refresh endpoint */
 type RefreshResponse = {
     accessToken: string
     refreshToken: string
 }
 
+/** Options for creating a feature-scoped axios instance */
 type ClientConfig = {
     baseURL: string
     feature?: string
@@ -32,16 +50,20 @@ type ClientConfig = {
     enableRefresh?: boolean
 }
 
+/** Internal flag used to avoid infinite retry loops */
 const RETRY_FLAG = '__isRetryRequest'
 
+// Single-flight refresh guard and queue for pending 401s
 let isRefreshing = false
 let pendingQueue: PendingResolver[] = []
 
+/** Normalize headers into a mutable AxiosHeaders instance */
 function toAxiosHeaders(h?: unknown): AxiosHeaders {
     if (!h) return new AxiosHeaders()
     return h instanceof AxiosHeaders ? h : new AxiosHeaders(h as Record<string, string>)
 }
 
+/** Resolve or reject all pending queued 401 requests */
 function processQueue(error: unknown | null, token?: string) {
     if (error) {
         pendingQueue.forEach(({ reject }) => reject(error))
@@ -51,12 +73,14 @@ function processQueue(error: unknown | null, token?: string) {
     pendingQueue = []
 }
 
+/** Set Authorization header on a given axios config */
 function setAuthHeaderOnConfig(config: AxiosRequestConfig, token: string) {
     const headers = toAxiosHeaders(config.headers)
     headers.set('Authorization', `Bearer ${token}`)
     config.headers = headers
 }
 
+/** Create a preconfigured axios instance for a specific feature */
 function createApiClient(config: ClientConfig): AxiosInstance {
     const instance = axios.create({
         baseURL: config.baseURL,
@@ -187,12 +211,14 @@ function createApiClient(config: ClientConfig): AxiosInstance {
     return instance
 }
 
+/** Default API client for the primary backend */
 export const apiClient = createApiClient({
     baseURL: API_CONFIG.BASE_URL,
     enableAuth: true,
     enableRefresh: true,
 })
 
+/** Auth-scoped client (talks to auth service) */
 export const authClient = createApiClient({
     baseURL: API_CONFIG.AUTH.BASE_URL,
     feature: 'auth',
@@ -200,6 +226,7 @@ export const authClient = createApiClient({
     enableRefresh: true,
 })
 
+/** Catalog-scoped client example (refresh disabled if opaque tokens) */
 export const catalogClient = createApiClient({
     baseURL: API_CONFIG.CATALOG.BASE_URL || 'http://localhost:8000',
     feature: 'catalog',
@@ -207,6 +234,7 @@ export const catalogClient = createApiClient({
     enableRefresh: false,
 })
 
+/** Factory to create additional feature clients on demand */
 export function createFeatureClient(config: ClientConfig): AxiosInstance {
     return createApiClient(config)
 }
