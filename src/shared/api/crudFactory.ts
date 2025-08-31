@@ -19,6 +19,6 @@ export function createCrudApi<TData, TCreate, TUpdate = Partial<TCreate>>(
             client.put<ApiResponse<TData>>(`${basePath}/${id}`, payload, cfg).then(r => r.data),
 
         remove: (id: string | number, cfg?: AxiosRequestConfig) =>
-            client.delete(`${basePath}/${id}`, cfg).then(() => {}),
+            client.delete<ApiResponse<void>>(`${basePath}/${id}`, cfg).then((r) => r.data),
     }
 }

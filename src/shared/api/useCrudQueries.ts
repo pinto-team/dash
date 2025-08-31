@@ -1,4 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
+import type { ApiResponse } from './types'
 
 export function createCrudHooks<TData, TCreate, TUpdate>(
     key: string,
@@ -53,7 +55,7 @@ export function createCrudHooks<TData, TCreate, TUpdate>(
 
         useDelete: () => {
             const qc = useQueryClient()
-            return useMutation({
+            return useMutation<ApiResponse<void>, AxiosError<ApiResponse<unknown>>, string | number>({
                 mutationFn: api.remove,
                 onSuccess: (_, id) => {
                     qc.invalidateQueries({ queryKey: [key, 'list'] })
