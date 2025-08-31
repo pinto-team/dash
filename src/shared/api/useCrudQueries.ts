@@ -5,9 +5,17 @@ export function createCrudHooks<TData, TCreate, TUpdate>(
     api: ReturnType<typeof import('./crudFactory').createCrudApi<TData, TCreate, TUpdate>>,
 ) {
     return {
+        /**
+         * Retrieve a list of items.
+         *
+         * The `params` argument becomes part of the React Query `queryKey` and is
+         * serialized with `JSON.stringify` for stability. Callers should memoize
+         * `params` (e.g. using `useMemo`) to avoid triggering unnecessary
+         * refetches on each render.
+         */
         useList: (params?: unknown) =>
             useQuery({
-                queryKey: [key, 'list', params],
+                queryKey: [key, 'list', params ? JSON.stringify(params) : undefined],
                 queryFn: () => api.list(params),
             }),
 
