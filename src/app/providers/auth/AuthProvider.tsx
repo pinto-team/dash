@@ -14,6 +14,15 @@ import { HttpError } from '@/lib/http-error.ts'
 
 import { AuthContext } from './auth-context'
 
+/**
+ * AuthProvider bootstraps auth state from storage and exposes auth context.
+ *
+ * Behaviors:
+ * - On mount, reads tokens and cached user to optimistically set state
+ * - Validates the access token by calling `me`; falls back to refresh if needed
+ * - Performs a hard logout when validation/refresh fails
+ */
+
 export default function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null)
     const [accessToken, setAT] = useState<string | null>(null)
@@ -51,6 +60,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [])
 
+    /** Clear all auth state and storage */
     function hardLogout() {
         setUser(null)
         setAT(null)
@@ -58,6 +68,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         clearAuthStorage()
     }
 
+    /** Perform credential login and persist tokens/user */
     async function login({ username, password }: { username: string; password: string }) {
         try {
             const r = await apiLogin(username, password)
@@ -83,6 +94,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    /** Logout current user and clear state */
     function logout() {
         hardLogout()
     }

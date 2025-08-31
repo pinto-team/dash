@@ -8,6 +8,7 @@ import type {
     ListResult,
 } from './types'
 
+/** Options for creating a CRUD API facade for a resource */
 export type CrudFactoryOptions = Readonly<{
     client: AxiosInstance
     basePath: string
@@ -15,6 +16,7 @@ export type CrudFactoryOptions = Readonly<{
     enveloped?: boolean
 }>
 
+/** Concrete endpoints used by the CRUD facade */
 export type CrudEndpoints = Readonly<{
     list: string
     create: string
@@ -23,6 +25,12 @@ export type CrudEndpoints = Readonly<{
     remove: (id: Identifier) => string
 }>
 
+/**
+ * Create a strongly-typed CRUD client for a given resource.
+ *
+ * The factory normalizes list/single responses regardless of whether the API
+ * returns plain arrays/items or uses an envelope `{ data, meta }`.
+ */
 export function createCrudFactory<TEntity, TCreate, TUpdate = Partial<TCreate>>(
     options: CrudFactoryOptions,
 ) {
@@ -36,6 +44,7 @@ export function createCrudFactory<TEntity, TCreate, TUpdate = Partial<TCreate>>(
         remove: (identifier) => `${basePath}/${identifier}`,
     }
 
+    /** List items with optional query params, returns normalized result */
     async function list(
         params?: ListQueryParams,
         cfg?: AxiosRequestConfig,
@@ -53,6 +62,7 @@ export function createCrudFactory<TEntity, TCreate, TUpdate = Partial<TCreate>>(
         return { items: (data as TEntity[]) ?? [] }
     }
 
+    /** Fetch a single item by id */
     async function get(id: Identifier, cfg?: AxiosRequestConfig): Promise<TEntity> {
         const { data } = await client.get<ApiEnvelopeItem<TEntity> | TEntity>(
             endpoints.detail(id),
@@ -61,6 +71,7 @@ export function createCrudFactory<TEntity, TCreate, TUpdate = Partial<TCreate>>(
         return (enveloped ? (data as ApiEnvelopeItem<TEntity>).data : (data as TEntity)) as TEntity
     }
 
+    /** Create a new item */
     async function create(payload: TCreate, cfg?: AxiosRequestConfig): Promise<TEntity> {
         const { data } = await client.post<ApiEnvelopeItem<TEntity> | TEntity>(
             endpoints.create,
@@ -70,6 +81,7 @@ export function createCrudFactory<TEntity, TCreate, TUpdate = Partial<TCreate>>(
         return (enveloped ? (data as ApiEnvelopeItem<TEntity>).data : (data as TEntity)) as TEntity
     }
 
+    /** Update an existing item */
     async function update(
         id: Identifier,
         payload: TUpdate,
@@ -83,6 +95,7 @@ export function createCrudFactory<TEntity, TCreate, TUpdate = Partial<TCreate>>(
         return (enveloped ? (data as ApiEnvelopeItem<TEntity>).data : (data as TEntity)) as TEntity
     }
 
+    /** Delete an item by id */
     async function remove(id: Identifier, cfg?: AxiosRequestConfig): Promise<void> {
         await client.delete<void>(endpoints.remove(id), cfg)
     }
