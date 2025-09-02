@@ -13,13 +13,6 @@ export const API_ROUTES = {
         VERIFY_EMAIL: '/auth/verify-email',
     },
 
-    DASHBOARD: {
-        STATS: '/dashboard/stats',
-        CHARTS: '/dashboard/charts',
-        ACTIVITY: '/dashboard/activity',
-        NOTIFICATIONS: '/dashboard/notifications',
-    },
-
     FILES: {
         UPLOAD: '/files/upload',
         DELETE: (id: string | number) => `/files/${id}`,
